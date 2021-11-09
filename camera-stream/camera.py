@@ -44,26 +44,12 @@ class DepthCamera:
             frames: rs.composite_frame = self.__pipeline.wait_for_frames()
             depth_frame = frames.get_depth_frame()
             color_frame = frames.get_color_frame()
+
             if not depth_frame or not color_frame:
                 return None
 
-            # depth_image = np.asanyarray(depth_frame.get_data())
             color_image = np.asanyarray(color_frame.get_data())
-
-            # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-            # depth_colormap_dim = depth_colormap.shape
-            # color_colormap_dim = color_image.shape
-
-            # if depth_colormap_dim != color_colormap_dim:
-            #     resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]),
-            #                                      interpolation=cv2.INTER_AREA)
-            #     images = np.hstack((resized_color_image, depth_colormap))
-            # else:
-            #     images = np.hstack((color_image, depth_colormap))
-
-            # ret, jpeg = cv2.imencode('.jpg', images)
-            ret, jpeg = cv2.imencode('.jpg', color_image)
+            _, jpeg = cv2.imencode('.jpg', color_image)
 
             return jpeg.tobytes(), depth_frame
 
