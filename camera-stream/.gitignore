@@ -1,1 +1,4 @@
 networks/yolo/model.h5
+.idea
+__pycache__
+*.h5

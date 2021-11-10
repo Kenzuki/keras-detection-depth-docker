@@ -2,6 +2,7 @@ import asyncio
 import websockets
 from camera import DepthCamera
 from networks.yolo.yolov3 import YoloNetwork
+import io
 
 
 async def frames(websocket, path):
@@ -9,7 +10,9 @@ async def frames(websocket, path):
         img, depth = camera.get_frame()
         if img is not None:
             result = nn.predict(img, depth)
-            await websocket.send(result)
+            buf = io.BytesIO()
+            result.save(buf, format="jpeg")
+            await websocket.send(buf.getvalue())
         else:
             print("Skipping frame")
 

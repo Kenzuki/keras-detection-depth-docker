@@ -1,1 +1,3 @@
 /networks/yolo/setup/**
+.idea
+__pycache__

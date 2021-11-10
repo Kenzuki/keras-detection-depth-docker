@@ -3,7 +3,6 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image, ImageDraw
 from numpy import expand_dims
 from networks.yolo.yolov3_util import decode_netout, correct_yolo_boxes, do_nms
-import io
 
 
 class YoloNetwork:
@@ -24,10 +23,8 @@ class YoloNetwork:
         self.model = load_model('./networks/yolo/model.h5', compile=False)
 
     @staticmethod
-    def __preprocess_image(img_bytes: bytes):
-        img = Image.open(io.BytesIO(img_bytes))
+    def __preprocess_image(img):
         width, height = img.size
-        img = img.convert('RGB')
         img = img.resize((416, 416), Image.NEAREST)
         img = img_to_array(img).astype('float32')
         img /= 255.0
@@ -45,9 +42,7 @@ class YoloNetwork:
         return v_boxes, v_labels, v_scores
 
     def __draw_prediction(self, img, boxes, labels, scores, depth):
-        img_obj = Image.open(io.BytesIO(img))
-        img_obj = img_obj.convert('RGB')
-        draw = ImageDraw.Draw(img_obj)
+        draw = ImageDraw.Draw(img)
 
         for i in range(len(boxes)):
             box = boxes[i]
@@ -57,9 +52,7 @@ class YoloNetwork:
             label = "%s (%.3f), distance: (%.2f)m" % (labels[i], scores[i], distance)
             draw.text((x1, y1), label)
 
-        buf = io.BytesIO()
-        img_obj.save(buf, format="jpeg")
-        return buf.getvalue()
+        return img
 
     @staticmethod
     def __calculate_distance(depth, y1, x1, y2, x2):
@@ -77,7 +70,7 @@ class YoloNetwork:
 
         return depth.get_distance(int(middle[0]), int(middle[1]))
 
-    def predict(self, img: bytes, depth):
+    def predict(self, img, depth):
         image, img_w, img_h = self.__preprocess_image(img)
         yhat = self.model.predict(image)
         boxes = list()

@@ -1,6 +1,6 @@
 import pyrealsense2 as rs
 import numpy as np
-import cv2
+from PIL import Image
 
 
 class DepthCamera:
@@ -42,16 +42,17 @@ class DepthCamera:
     def get_frame(self):
         try:
             frames: rs.composite_frame = self.__pipeline.wait_for_frames()
-            depth_frame = frames.get_depth_frame()
-            color_frame = frames.get_color_frame()
+            depth_frame: rs.depth_frame = frames.get_depth_frame()
+            color_frame: rs.video_frame = frames.get_color_frame()
 
             if not depth_frame or not color_frame:
                 return None
 
             color_image = np.asanyarray(color_frame.get_data())
-            _, jpeg = cv2.imencode('.jpg', color_image)
+            color_image = color_image[:, :, ::-1]
+            rgb_frame = Image.fromarray(color_image)
 
-            return jpeg.tobytes(), depth_frame
+            return rgb_frame, depth_frame
 
         except Exception as e:
             print(e)
