@@ -1,4 +1,5 @@
-from ..yolov3_util import make_yolov3_model, WeightReader
+from ..util.utils import make_yolov3_model
+from ..util.weight_reader import WeightReader
 
 model = make_yolov3_model()
 

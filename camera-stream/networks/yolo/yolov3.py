@@ -2,7 +2,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image, ImageDraw
 from numpy import expand_dims
-from networks.yolo.yolov3_util import decode_netout, correct_yolo_boxes, do_nms
+from networks.yolo.util.utils import decode_netout, correct_yolo_boxes, do_nms
 
 
 class YoloNetwork:
