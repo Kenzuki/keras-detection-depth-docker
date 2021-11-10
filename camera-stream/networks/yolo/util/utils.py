@@ -16,15 +16,18 @@ def _conv_block(inp, convs, skip=True):
             skip_connection = x
         count += 1
 
-        if conv['stride'] > 1: x = ZeroPadding2D(((1, 0), (1, 0)))(x)  # peculiar padding as darknet prefer left and top
+        if conv['stride'] > 1:
+            x = ZeroPadding2D(((1, 0), (1, 0)))(x)  # peculiar padding as darknet prefer left and top
         x = Conv2D(conv['filter'],
                    conv['kernel'],
                    strides=conv['stride'],
                    padding='valid' if conv['stride'] > 1 else 'same',  # peculiar padding as darknet prefer left and top
                    name='conv_' + str(conv['layer_idx']),
                    use_bias=False if conv['bnorm'] else True)(x)
-        if conv['bnorm']: x = BatchNormalization(epsilon=0.001, name='bnorm_' + str(conv['layer_idx']))(x)
-        if conv['leaky']: x = LeakyReLU(alpha=0.1, name='leaky_' + str(conv['layer_idx']))(x)
+        if conv['bnorm']:
+            x = BatchNormalization(epsilon=0.001, name='bnorm_' + str(conv['layer_idx']))(x)
+        if conv['leaky']:
+            x = LeakyReLU(alpha=0.1, name='leaky_' + str(conv['layer_idx']))(x)
 
     return add([skip_connection, x]) if skip else x
 
@@ -150,7 +153,6 @@ def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
     grid_h, grid_w = netout.shape[:2]
     nb_box = 3
     netout = netout.reshape((grid_h, grid_w, nb_box, -1))
-    nb_class = netout.shape[-1] - 5
 
     boxes = []
 
@@ -166,9 +168,9 @@ def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
         for b in range(nb_box):
             # 4th element is objectness score
             objectness = netout[int(row)][int(col)][b][4]
-            # objectness = netout[..., :4]
 
-            if (objectness <= obj_thresh).all(): continue
+            if (objectness <= obj_thresh).all():
+                continue
 
             # first 4 elements are x, y, w, and h
             x, y, w, h = netout[int(row)][int(col)][b][:4]
@@ -182,7 +184,6 @@ def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
             classes = netout[int(row)][col][b][5:]
 
             box = BoundingBox(x - w / 2, y - h / 2, x + w / 2, y + h / 2, objectness, classes)
-            # box = BoundBox(x-w/2, y-h/2, x+w/2, y+h/2, None, classes)
 
             boxes.append(box)
 
