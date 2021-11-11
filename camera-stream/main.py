@@ -19,7 +19,7 @@ async def frames(websocket, path):
 
 
 if __name__ == "__main__":
-    lang = os.environ.get("NETWORK_LANG")
+    lang = os.environ.get("NETWORK_LANGUAGE")
 
     nn = YoloNetwork(lang=lang)
 

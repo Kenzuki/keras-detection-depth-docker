@@ -8,6 +8,8 @@ services:
         build: ./camera-stream/.
         ports:
             - "5678:5678"
+        environment:
+            - NETWORK_LANGUAGE=en
         devices:
             - "/dev/video0:/dev/video0"
             - "/dev/video1:/dev/video1"
