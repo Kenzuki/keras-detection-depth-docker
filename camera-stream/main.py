@@ -3,6 +3,7 @@ import websockets
 from camera import DepthCamera
 from networks.yolo.yolov3 import YoloNetwork
 import io
+import os
 
 
 async def frames(websocket, path):
@@ -18,7 +19,9 @@ async def frames(websocket, path):
 
 
 if __name__ == "__main__":
-    nn = YoloNetwork()
+    lang = os.environ.get("NETWORK_LANG")
+
+    nn = YoloNetwork(lang=lang)
 
     camera = DepthCamera()
     camera.start()

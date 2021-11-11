@@ -18,17 +18,6 @@ class DepthCamera:
     def __del__(self):
         self.__pipeline.stop()
 
-    def __is_rgb_camera(self):
-        found_rgb = False
-
-        for s in self.__device.sensors:
-            if s.get_info(rs.camera_info.name) == 'RGB Camera':
-                found_rgb = True
-                break
-
-        if not found_rgb:
-            raise Exception("Depth camera with Color sensor is required.")
-
     def start(self):
         self.__config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
@@ -57,3 +46,16 @@ class DepthCamera:
         except Exception as e:
             print(e)
             return None
+
+    def __is_rgb_camera(self):
+        found_rgb = False
+
+        for s in self.__device.sensors:
+            if s.get_info(rs.camera_info.name) == 'RGB Camera':
+                found_rgb = True
+                break
+
+        if not found_rgb:
+            raise Exception("Depth camera with color sensor is required.")
+
+

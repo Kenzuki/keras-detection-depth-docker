@@ -25,3 +25,6 @@ class BoundingBox:
             self.score = self.classes[self.get_label()]
 
         return self.score
+
+    def to_array(self):
+        return [self.ymin, self.xmin, self.ymax, self.xmax]

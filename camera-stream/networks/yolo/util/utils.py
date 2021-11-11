@@ -4,6 +4,7 @@ from tensorflow.keras.models import Model
 from tensorflow.image import non_max_suppression
 from tensorflow import gather
 from networks.yolo.util.bounding_box import BoundingBox
+from typing import List
 import numpy as np
 
 
@@ -238,13 +239,16 @@ def bbox_iou(box1, box2):
     return float(intersect) / union
 
 
-def do_nms(boxes, labels, scores, threshold):
+def do_nms(boxes: List[BoundingBox], labels: List[str], scores: List[float], threshold: float):
     tf_boxes = np.empty([len(boxes), 4])
     for i in range(len(boxes)):
-        tf_boxes[i] = [boxes[i].ymin, boxes[i].xmin, boxes[i].ymax, boxes[i].xmax]
+        tf_boxes[i] = boxes[i].to_array()
 
     selected_indices = non_max_suppression(tf_boxes, scores, 10, threshold)
-    selected_boxes = gather(tf_boxes, selected_indices).numpy()
-    selected_labels = gather(labels, selected_indices).numpy().astype(str)
-    selected_scores = gather(scores, selected_indices).numpy()
+
+    selected_boxes = gather(tf_boxes, selected_indices).numpy().tolist()
+    selected_boxes: List[BoundingBox] = list(map(lambda x: BoundingBox(x[1], x[0], x[3], x[2]), selected_boxes))
+    selected_labels: List[str] = gather(labels, selected_indices).numpy().astype(str).tolist()
+    selected_scores: List[float] = gather(scores, selected_indices).numpy().tolist()
+
     return selected_boxes, selected_labels, selected_scores
