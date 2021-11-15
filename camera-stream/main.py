@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 from camera import DepthCamera
-from networks.yolo.yolov3 import YoloNetwork
+from networks.yolo.yolo import YoloNetwork
 import io
 import os
 
